@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "736832501265",
+    "firebase_url": "https://banded-arch-272505.firebaseio.com",
+    "project_id": "banded-arch-272505",
+    "storage_bucket": "banded-arch-272505.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:736832501265:android:1fe2181260c341b848a3b0",
+        "android_client_info": {
+          "package_name": "com.example.lahacks"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "736832501265-9csu09o49n8mrd24ie9g8581fm4c06va.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.lahacks",
+            "certificate_hash": "58ff512d1f31aa78a19a21f7a281a2635a5a4455"
+          }
+        },
+        {
+          "client_id": "736832501265-asbek7j64n6lt377p2rmohs0k0vci624.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8AfABKFEAt3UK3M0Y6vq9apU-tAOszAk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "736832501265-asbek7j64n6lt377p2rmohs0k0vci624.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
