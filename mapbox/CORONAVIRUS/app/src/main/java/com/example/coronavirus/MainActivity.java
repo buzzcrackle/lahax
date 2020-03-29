@@ -4,6 +4,7 @@ import android.content.Context;
 import android.annotation.SuppressLint;
 import android.location.Location;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Toast;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,11 +14,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import androidx.annotation.NonNull;
 // Classes needed to handle location permissions
+import com.google.android.material.bottomnavigation.BottomNavigationMenu;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 
 // Classes needed to initialize the map
 import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.annotations.Icon;
+import com.mapbox.mapboxsdk.annotations.IconFactory;
 import com.mapbox.mapboxsdk.annotations.Marker;
 import com.mapbox.mapboxsdk.annotations.MarkerOptions;
 import com.mapbox.mapboxsdk.maps.MapView;
@@ -58,6 +63,9 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PointF;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import com.example.coronavirus.NotificationFragment;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset;
 import static com.mapbox.mapboxsdk.style.expressions.Expression.eq;
@@ -74,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements
     // Variables needed to initialize a map
     private MapboxMap mapboxMap;
     private MapView mapView;
+    private BottomNavigationView nav;
     // Variables needed to handle location permissions
     private PermissionsManager permissionsManager;
     // Variables needed to add the location engine
@@ -85,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final String SOURCE_ID = "SOURCE_ID";
     private static final String ICON_ID = "ICON_ID";
     private static final String LAYER_ID = "LAYER_ID";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,29 +108,100 @@ public class MainActivity extends AppCompatActivity implements
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
-
+        nav = findViewById(R.id.bottom_navigation_menu);
+        nav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+                                                    @Override
+                                                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                                                        switch (menuItem.getItemId()) {
+                                                            case R.id.bottomNavigationTab1:
+                                                                Toast.makeText(MainActivity.this, "Test 1", Toast.LENGTH_SHORT).show();
+                                                                break;
+                                                            case R.id.bottomNavigationTab2:
+                                                                Toast.makeText(MainActivity.this, "Test 2", Toast.LENGTH_SHORT).show();
+                                                                break;
+                                                            case R.id.bottomNavigationTab3:
+                                                                openFragment(NotificationFragment.newInstance("",""));
+                                                                Toast.makeText(MainActivity.this, "Test 3", Toast.LENGTH_SHORT).show();
+                                                                break;
+                                                        }
+                                                        return false;
+                                                    }
+                                                });
     }
-
+    public void openFragment(Fragment fragment) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+    private class Pharmacy {
+        MarkerOptions value;
+        Pharmacy(Point point, String string, String name) {
+            IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
+            Icon icon = iconFactory.fromResource(R.drawable.pharmacy);
+            value = new MarkerOptions()
+                    .position(new LatLng(point.latitude(),point.longitude()))
+                    .icon(icon)
+                    .setSnippet(string)
+                    .title(name);
+        }
+    }
+    private class Store {
+        MarkerOptions value;
+        Store(Point point, String string, String name) {
+            IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
+            Icon icon = iconFactory.fromResource(R.drawable.store);
+            value = new MarkerOptions()
+                    .position(new LatLng(point.latitude(),point.longitude()))
+                    .icon(icon)
+                    .setSnippet(string)
+                    .title(name);
+        }
+    }
+    private class Coronavirus {
+        MarkerOptions value;
+        Coronavirus(Point point, String string, String name) {
+            IconFactory iconFactory = IconFactory.getInstance(MainActivity.this);
+            Icon icon = iconFactory.fromResource(R.drawable.coronavirus);
+            value = new MarkerOptions()
+                    .position(new LatLng(point.latitude(),point.longitude()))
+                    .icon(icon)
+                    .setSnippet(string)
+                    .title(name);
+        }
+    }
     @Override
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
+       /* mapboxMap.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull Marker marker) {
+                Toast.makeText(MainActivity.this, marker.getTitle(), Toast.LENGTH_LONG).show();
+                return true;
+            }
+        });*/
         this.mapboxMap = mapboxMap;
 
         List<Feature> symbolLayerIconFeatureList = new ArrayList<>();
+
         //symbolLayerIconFeatureList.add(Feature.fromGeometry(
        //         Point.fromLngLat(-117.562742 ,33.866781)));
 
+        Point Walgreens;
+        Walgreens = Point.fromLngLat(-117.562742,33.866781);
+        Pharmacy test1 = new Pharmacy(Walgreens,"Available: Sanitation, Masks, Tylenol", "Walgreens");
+        mapboxMap.addMarker(test1.value);
 
-        mapboxMap.addMarker(new MarkerOptions()
-            .position(new LatLng(33.866781, -117.562742))
-            .title("Mom house"));
-        mapboxMap.setOnMarkerClickListener(new MapboxMap.OnMarkerClickListener() {
-            @Override
-            public void onMarkerClick(@NonNull Marker marker) {
-                Toast.makeText(this, marker.getTitle(), Toast.LENGTH_LONG).show();
+        Point infected;
+        infected = Point.fromLngLat(-117.578547,33.864215);
+        Coronavirus test2 = new Coronavirus(infected, "1 day ago","Alex Padayao");
+        mapboxMap.addMarker(test2.value);
 
-            }
-        });
-        mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/quymac/ck8b5h4dc0scy1ipnizoz8exg")
+        Point Vons;
+        Vons = Point.fromLngLat(-117.572707,33.854237);
+        Store test3 = new Store(Vons, "Available: Toiletry, Food", "Vons");
+        mapboxMap.addMarker(test3.value);
+
+        mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/quymac/ck8cbi6cm1xt61ipenqat39ky")
 
         // Add the SymbolLayer icon image to the map style
                 .withImage(ICON_ID, BitmapFactory.decodeResource(
@@ -144,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements
                 enableLocationComponent(style);
             }
         });
+
     }
 
     /**
@@ -215,7 +297,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         } else {
             Toast.makeText(this, R.string.user_location_permission_not_granted, Toast.LENGTH_LONG).show();
-            finish();
+           // finish();
         }
     }
 
@@ -245,9 +327,9 @@ public class MainActivity extends AppCompatActivity implements
                 }
 
                 // Create a Toast which displays the new location's coordinates
-                Toast.makeText(activity, String.format(activity.getString(R.string.new_location),
-                        String.valueOf(result.getLastLocation().getLatitude()), String.valueOf(result.getLastLocation().getLongitude())),
-                        Toast.LENGTH_SHORT).show();
+                //Toast.makeText(activity, String.format(activity.getString(R.string.new_location),
+                  //      String.valueOf(result.getLastLocation().getLatitude()), String.valueOf(result.getLastLocation().getLongitude())),
+                 //       Toast.LENGTH_SHORT).show();
 
                 // Pass the new location to the Maps SDK's LocationComponent
                 if (activity.mapboxMap != null && result.getLastLocation() != null) {
