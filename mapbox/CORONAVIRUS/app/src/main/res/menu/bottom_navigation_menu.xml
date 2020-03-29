@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="Food"
+        android:id="@+id/bottomNavigationTab1"
+        android:icon="@drawable/icon2"/>
+    <item android:title="Supplies"
+        android:id="@+id/bottomNavigationTab2"
+        android:icon="@drawable/icon3"/>
+    <item android:title="Report"
+        android:id="@+id/bottomNavigationTab3"
+        android:icon="@drawable/icon4"/>
+</menu>
