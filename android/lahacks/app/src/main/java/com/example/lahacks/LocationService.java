@@ -36,6 +36,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import static android.content.ContentValues.TAG;
@@ -58,7 +59,7 @@ public class LocationService extends Service implements  GoogleApiClient.Connect
     protected FirebaseFirestore db;
     private String androidId;
     private int deviceCount;
-
+    private HashSet<String> devices;
 
     @SuppressLint("HardwareIds")
     @Override
@@ -70,6 +71,7 @@ public class LocationService extends Service implements  GoogleApiClient.Connect
         db = FirebaseFirestore.getInstance();
         androidId = Settings.Secure.getString(getContentResolver(),
                 Settings.Secure.ANDROID_ID);
+        devices = new HashSet<>();
     }
 
     @Override
@@ -147,6 +149,7 @@ public class LocationService extends Service implements  GoogleApiClient.Connect
                     if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
                         //discovery starts, we can show progress dialog or perform other tasks
                         deviceCount = 0;
+                        devices.clear();
                     } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                         //discovery finishes, dismis progress dialog
                         Map<String, Object> doc = new HashMap<>();
@@ -172,7 +175,10 @@ public class LocationService extends Service implements  GoogleApiClient.Connect
                     } else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                         //bluetooth device found
                         BluetoothDevice device = (BluetoothDevice) intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                        deviceCount++;
+                        if (!devices.contains(device.getAddress())) {
+                            deviceCount++;
+                            devices.add(device.getAddress());
+                        }
                     }
                 }
             };
